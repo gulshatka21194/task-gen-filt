@@ -38,7 +38,7 @@ init({Host, Port, DB, QueueKey, ResultSetKey, FiltratorMod}) ->
   {ok, Pid} = eredis:start_link(Host, Port, DB),
   if
     FiltratorMod /= undefined -> 
-      FiltratorMod:add_handler(FiltratorMod, redis_client),
+      FiltratorMod:add_handler(FiltratorMod, ?MODULE),
       FiltratorMod:send_notice();
     true -> ok
   end,
@@ -47,7 +47,6 @@ init({Host, Port, DB, QueueKey, ResultSetKey, FiltratorMod}) ->
 terminate(_Reason, _State) -> ok.
 
 handle_call(get_nums, _From, #state{redisClient = RedisClient, queueKey = QueueKey} = State) ->
-  % [{ok, Nums}, _] = eredis:qp(RedisClient, [["LRANGE", QueueKey, 0, -1], ["DEL", QueueKey]]),
   {ok, Nums} = eredis:q(RedisClient, ["LRANGE", QueueKey, 0, -1]),
   {reply, lists:map(fun(X) -> binary_to_integer(X) end, lists:reverse(Nums)), State};
 handle_call(get_prime_nums, _From, #state{redisClient = RedisClient, resultSetKey = ResultSetKey} = State) ->

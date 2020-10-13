@@ -1,8 +1,8 @@
 {application, task,
 [{description, "Task"},
-{vsn, "1.0.0"},
-{modules, [generator, filtrator, task_sup, task_app, redis_client]},
-{registered, [filtrator, redis_client]},
+{vsn, "1.0.1"},
+{modules, []},
+{registered, [task_sup, filtrator, redis_client, generator]},
 {applications, [kernel, stdlib]},
 {env, []},
 {mod, {task_app,["localhost", 6379, 0, "qk", "rk", 3000]}}]}.

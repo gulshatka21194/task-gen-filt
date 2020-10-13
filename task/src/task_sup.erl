@@ -8,15 +8,22 @@
 start_link([Host, Port, Db, QueueKey, ResultKey, MaxNum]) ->
   supervisor:start_link({local, ?MODULE}, ?MODULE, [Host, Port, Db, QueueKey, ResultKey, MaxNum]).
 
-
 %%supervisor callback
 init([Host, Port, Db, QueueKey, ResultKey, MaxNum]) ->
+  SupSpecList = #{strategy => one_for_all,
+   		  		  intensity => 10,
+   		  		  period => 1000},
   ChildList = [child(filtrator, []),
                child(redis_client, [Host, Port, Db, QueueKey, ResultKey, filtrator]),
                child(generator, [MaxNum, redis_client])],
-  {ok, {{one_for_all, 4, 1}, ChildList}}.
+  {ok, {SupSpecList, ChildList}}.
 
 
 %%internal function
 child(Module, ArgList) ->
-  {Module, {Module, start_link, ArgList}, permanent, 1000, worker, [Module]}.
+  #{id => Module,
+   start => {Module, start_link, ArgList},
+   restart => permanent,
+   shutdown => 1000,
+   type => worker,
+   modules => [Module]}.
