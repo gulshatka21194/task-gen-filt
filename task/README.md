@@ -12,10 +12,6 @@ An OTP application
 
 Build
 -----
-
-	$ git clone https://github.com/gulshatka21194/task-gen-filt
-    $ cd task-gen-filt\task
-
 Передача параметров осуществляется в файле task.app.src в строке
 	{mod, {task_app,["localhost", 6379, 0, "qk", "rk", 3000]}}, где
 	"localhost" - RedisHost,
@@ -25,9 +21,12 @@ Build
 	"rk" - ResultSetKey,
 	3000 - N.
 
-Сборка релиза:
-    $ rebar3 release
-    $ _build\default\rel\task\bin\task.cmd console
+	$ git clone https://github.com/gulshatka21194/task-gen-filt
+    $ cd task-gen-filt\task
 
-Запуск тестов:
-    $ rebar3 eunit
+    Сборка релиза:
+    $ rebar3 release
+	$ _build\default\rel\task\bin\task.cmd console
+
+	Запуск тестов:
+	$ rebar3 eunit
