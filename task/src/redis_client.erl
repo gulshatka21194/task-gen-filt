@@ -30,7 +30,8 @@ add_nums(RandNums) when is_list(RandNums) ->
 add_prime_nums(PrimeNums) when is_list(PrimeNums) ->
   gen_server:cast(?MODULE, {add_prime_nums, PrimeNums}).
 
-stop() -> gen_server:stop(?MODULE).
+stop() ->
+  gen_server:stop(?MODULE).
 
 
 %%gen_server callbacks
@@ -47,7 +48,7 @@ init({Host, Port, DB, QueueKey, ResultSetKey, FiltratorMod}) ->
 terminate(_Reason, _State) -> ok.
 
 handle_call(get_nums, _From, #state{redisClient = RedisClient, queueKey = QueueKey} = State) ->
-  {ok, Nums} = eredis:q(RedisClient, ["LRANGE", QueueKey, 0, -1]),
+  [{ok, Nums}, _] = eredis:qp(RedisClient, [["LRANGE", QueueKey, 0, -1], ["DEL", QueueKey]]),
   {reply, lists:map(fun(X) -> binary_to_integer(X) end, lists:reverse(Nums)), State};
 handle_call(get_prime_nums, _From, #state{redisClient = RedisClient, resultSetKey = ResultSetKey} = State) ->
   {ok, PrimeNums} = eredis:q(RedisClient, ["SMEMBERS", ResultSetKey]),
